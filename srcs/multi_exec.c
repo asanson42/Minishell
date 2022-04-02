@@ -23,7 +23,10 @@ static void ft_fork2(t_data *data, t_process *process, int stdinfd, int cnt, int
                 process->rdirlst = process->rdirlst->next;
 	}
 	if (is_builtins(process->cmds[i]))
+	{
 		run_built(process->cmds[i], process->cmds, data);
+		exit(0);
+	}
         else
         {
 

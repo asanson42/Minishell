@@ -6,7 +6,7 @@
 /*   By: asanson <asanson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/27 16:21:39 by asanson           #+#    #+#             */
-/*   Updated: 2022/02/27 18:23:19 by asanson          ###   ########.fr       */
+/*   Updated: 2022/03/31 17:30:19 by asanson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,8 +92,10 @@ typedef struct s_data
 	t_lexer		lexer;
 }		t_data;
 
+// EXIT STATUS
+static int g_exit_status;
+
 // PROMPT
-char	*get_prompt(t_data *data);
 void	lexer_and_parser(t_data *data);
 
 // LEXER
@@ -104,6 +106,11 @@ void	create_token(char *cmdline, t_list **tokenlst, int len, int index);
 int		ft_spetoken(char *cmdline, t_list **tokenlst, int i, int test);
 int		find_token(char *cmdline, t_list **tokenlst, t_lexer *d);
 int		ft_check_tokens(t_list *lst);
+
+// EXPAND
+int ft_env_exist(char *cmd, char **env, t_list *envlist);
+char    *ft_find_value(char *cmd, char **env, t_list *envlist);
+void    ft_expand(t_list *tokenlst, t_data *data);
 
 // PARSER
 t_rdir	*ft_trdir(t_token *current, t_token *next, t_process *process);
@@ -133,13 +140,14 @@ char	**ft_no_split(char *cmd);
 void	set_value(char **split, t_list *exenv);
 void	ft_export(char *cmd, t_list **exenvi, t_data *data, int fd);
 
-void	ft_unset(char *cmd, t_list *exenvi, t_data *data);
+void	ft_unset(char *cmd, t_list **exenv, t_data *data);
 
 void	print_env(char **env, int fd);
 void	ft_env(t_data *data, t_list *envx, int fd);
 
 void	ft_pwd(char **env, int fd);
-void	ft_echo(char *cmd, int n, int fd);
+//void	ft_echo(char *cmd, int n, int fd);
+void	ft_echo(char **cmds, int fd);
 
 ssize_t	find_env(char *arg, char **env);
 size_t	get_envs_count(char **envp);
@@ -154,11 +162,18 @@ void	run_built(char *cmd, char **cmds, t_data *data);
 void	sig_int(int sig);
 void	sig_int2(int sig);
 
-//CLOSE
+//CLOSE && ERRORS
+void    ft_error_command(char *cmd, char **path, t_data *data);
 void	error_exec(void);
 void	error_pid(void);
 void	ft_free_strs(char **strs, int index);
 int		ft_end(char *line, t_data *data, int mode);
+void    free_rdir(t_list **rdirlst);
+void    free_process(t_list **proclst);
+void    free_token(t_list **tokenlst, t_list *envlist);
+void    free_envlist(t_list **envlist);
+void    free_data(t_data *data);
+void	free_end_mode(char *line, t_data *data);
 void	ft_clean_all(t_data *data);
 
 #endif

@@ -6,16 +6,57 @@
 /*   By: asanson <asanson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/27 13:53:00 by asanson           #+#    #+#             */
-/*   Updated: 2022/02/27 13:53:02 by asanson          ###   ########.fr       */
+/*   Updated: 2022/03/28 15:43:43 by mj               ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "lexer.h"
 
-static void	*unset_cmd(t_env *env)
+void    print_envlist(t_list *envlist)
 {
-	free(env->value);
-	free(env->var);
+        t_env *env;
+
+        while (envlist)
+        {
+                env = (t_env*)envlist->content;
+                printf("env->var: %s\n", env->var);
+		printf("env->value: %s\n", env->value);
+		envlist = envlist->next;
+        }
+}
+
+
+static void	*unset_cmd(t_env *env, t_list *exenv, t_list **envlist)
+{
+	t_list *first = *envlist;
+	t_list *tmp = exenv;
+	t_list *tmp2;
+
+	if ((ft_strcmp(((t_env*)first->content)->value, ((t_env*)tmp->content)->value) == 0))
+	{
+		first->previous = NULL;
+		*envlist = first->next;
+		free(tmp);
+	}
+	else
+	{
+		tmp2 = exenv->previous;
+		if (exenv->next != NULL)
+			tmp2->next = exenv->next;
+		else 
+			tmp2->next = NULL;
+		free(tmp);
+
+	}
+	if (env->value)
+		env->value = NULL;
+	if (env->var)
+	{
+		free(env->var);
+		env->var = NULL;
+	}
+	free(env);
+	env = NULL;
 	return (NULL);
 }
 
@@ -73,20 +114,32 @@ static void	search_env(t_data *data, char *cmd)
 	data->env = new;
 }
 
-void	ft_unset(char *cmd, t_list *exenv, t_data *data)
+
+
+void	ft_unset(char *cmd, t_list **exenv, t_data *data)
 {
 	t_env	*current;
+	t_list *envlst;
 
-	while (exenv)
+	envlst = (*exenv);
+
+	if (!cmd)
+		return ;
+	while (envlst)
 	{
-		current = (t_env *)exenv->content;
+		current = (t_env *)envlst->content;
 		if (ft_strcmp(cmd, current->var) == 0)
 		{
-			current = unset_cmd(current);
-			ft_dlstdelone(exenv, NULL);
+			current = unset_cmd(current, envlst, exenv);
 			return ;
 		}
-		exenv = exenv->next;
+		else if (ft_strcmp(cmd, current->value) == 0)
+		{
+			current = unset_cmd(current, envlst, exenv);
+			return ;
+		}
+		envlst = envlst->next;
 	}
 	search_env(data, cmd);
+	return ;
 }

@@ -1,5 +1,28 @@
 #include "lexer.h"
 
+int	check_word(char *str)
+{
+	int i = 0;
+	int j = 0;
+
+	while (str[i])
+	{
+		j = i + 1;
+		if (str[i] == '<')
+			if (str[j] == '>')
+				return (1);
+		if (str[i] == '>')
+			if (str[j] == '<')
+				return (1);
+		if (str[i] == '|')
+			if (str[j] == '|')
+				return (1);
+		i++;
+	}
+	return (0);
+	
+}
+
 int ft_check_tokens(t_list *lst)
 {
 	t_token *current;
@@ -10,13 +33,17 @@ int ft_check_tokens(t_list *lst)
 		return (1);
 	while (lst)	
 	{
-		current = lst->content;
-		if (current->tokentype == 5 && (lst->next == NULL || ((t_token*)lst->next->content)->tokentype == 5))
-			return (1);
-		if ((current->tokentype >= 1 && current->tokentype <= 4))
+		if (((t_token*)lst->content)->tokenstr)
 		{
-			if (lst->next == NULL || ((t_token*)lst->next->content)->tokentype != 0)
+			current = lst->content;
+			if (current->tokentype == 5 && (lst->next == NULL || ((t_token*)lst->next->content)->tokentype == 5))
 				return (1);
+			if ((current->tokentype >= 1 && current->tokentype <= 4))
+				if (lst->next == NULL || ((t_token*)lst->next->content)->tokentype != 0)
+					return (1);
+			if (current->tokentype == 0)
+				if (check_word(current->tokenstr) != 0)
+					return (1);
 		}
 		lst = lst->next;
 	}

@@ -9,17 +9,20 @@ static int	size_cmds(t_list *tokenlst)
 
 	while (tokenlst)
 	{
-		current = (t_token*)tokenlst->content;
-		if (current->tokentype == 0)
-			if (tokenlst->previous == NULL)
-				size++;
-			else if (tokenlst->previous != NULL)
-			{
-				if (((t_token*)tokenlst->previous->content)->tokentype < 1 || ((t_token*)tokenlst->previous->content)->tokentype > 4)
+		if (((t_token*)tokenlst->content)->tokenstr)
+		{
+			current = (t_token*)tokenlst->content;
+			if (current->tokentype == 0)
+				if (tokenlst->previous == NULL)
 					size++;
-			}
-		if (current->tokentype == 5)
-			break ;
+				else if (tokenlst->previous != NULL)
+				{
+					if (((t_token*)tokenlst->previous->content)->tokentype < 1 || ((t_token*)tokenlst->previous->content)->tokentype > 4)
+						size++;
+				}
+			if (current->tokentype == 5)
+				break ;
+		}
 		tokenlst = tokenlst->next;
 	}
 	return (size);
@@ -37,7 +40,7 @@ static int	ft_tab_cmds(t_list **tokenlst, char **cmds)
 		current = (*tokenlst)->content;
 		if (current->tokentype == 5)
 			break ;
-		if (current->tokentype == 0)
+		if (current->tokentype == 0 && current->tokenstr != NULL)
 		{
 			if ((*tokenlst)->previous == NULL)
 			{
@@ -50,7 +53,7 @@ static int	ft_tab_cmds(t_list **tokenlst, char **cmds)
                         {
                                 if (((t_token*)(*tokenlst)->previous->content)->tokentype < 1 || ((t_token*)(*tokenlst)->previous->content)->tokentype > 4)
 				{
-                                        cmds[i] = ft_strdup(current->tokenstr);
+					cmds[i] = ft_strdup(current->tokenstr);
 					if (cmds[i] == NULL)
 						return (1);
 					i++;

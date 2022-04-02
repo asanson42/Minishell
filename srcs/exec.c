@@ -1,62 +1,5 @@
 #include "lexer.h"
 
-static int	ft_count_words(const char *s, char c)
-{
-	int		number;
-	int		i;
-
-	i = 0;
-	number = 0;
-	while (*s)
-	{
-		if (i == 1 && *s == c)
-			i = 0;
-		if (i == 0 && *s != c)
-		{
-			i = 1;
-			number++;
-		}
-		s++;
-	}
-	return (number);
-}
-
-void	spliting(int words, char const *s, char c, char **tab)
-{
-	int	j;
-	int	i;
-	int	start;
-
-	j = -1;
-	i = 0;
-	while (++j < words)
-	{
-		while (s[i] && s[i] == c)
-			i++;
-		start = i;
-		while (s[i] && s[i] != c)
-			i++;
-		tab[j] = ft_substr(s, start, i - start);
-		i++;
-	}
-	tab[j] = NULL;
-}
-
-char	**ft_strsplit(char const *s, char c)
-{
-	int		words;
-	char	**tab;
-
-	if (!s || !c)
-		return (NULL);
-	words = ft_count_words(s, c);
-	tab = malloc((sizeof(char *) * (words + 1)));
-	if (tab == NULL)
-		return (NULL);
-	spliting(words, s, c, tab);
-	return (tab);
-}
-
 char	*is_access(char *cmd, char *path)
 {
 	char *slash;
@@ -102,8 +45,7 @@ char	*find_path(char *cmd, t_data *data)
 		i++;
 	split_path = ft_strsplit(data->env[i], ':');
 	if (split_path == NULL)
-		//return (bad_cmd(cmd));
-		exit(1);
+		ft_error_command(cmd, NULL, data);
 	i = 0;
 	while (split_path[i] && cmd[0] != '\0')
 	{
@@ -117,8 +59,7 @@ char	*find_path(char *cmd, t_data *data)
 		i++;
 	}
 	if (ret == 0)
-		//free_all;
-		exit(1);
+		ft_error_command(cmd, split_path, data);
 	return (cmd);
 	
 }

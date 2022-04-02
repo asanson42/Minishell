@@ -6,7 +6,7 @@
 /*   By: asanson <asanson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/27 16:43:18 by asanson           #+#    #+#             */
-/*   Updated: 2022/02/27 16:43:20 by asanson          ###   ########.fr       */
+/*   Updated: 2022/03/17 18:06:56 by mj               ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ typedef struct s_list
 
 void	*ft_calloc(size_t nmemb, size_t size);
 int		ft_atoi(const char *str);
+char            *ft_itoa(int n);
 int		ft_isalnum(int c);
 int		ft_isprint(int c);
 int		ft_isspec(int c);
@@ -46,6 +47,7 @@ char	*ft_strdup(const char *s1);
 void	ft_bzero(void *s, size_t n);
 void	*ft_memset(void *b, int c, size_t n);
 char	*ft_substr(char const *s, unsigned int start, size_t len);
+char    **ft_strsplit(char const *s, char c);
 char	**ft_split(char const *s, char c);
 void	ft_putstr_fd(char *s, int fd);
 void	ft_putendl_fd(char *s, int fd);

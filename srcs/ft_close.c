@@ -21,9 +21,7 @@ void	error_pid(void)
 
 void	ft_clean_all(t_data *data)
 {
-	//ft_dlstclear(&data->tokenlst, &free);
-	//ft_dlstclear(&data->proclst, &free);
-	int i = 0;
+	printf("Déconnexion\n");
 	ft_end(data->cmdline, data, 1);
 	exit(0);
 }

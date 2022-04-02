@@ -34,7 +34,6 @@ static char     **envdup(char **envp)
         i = 0;
         while (envp[i])
                 i++;
-        //printf("i = %d\n", i);
         new = malloc(sizeof(char *) * (i + 1));
         if (!new)
                 return (NULL);
@@ -65,30 +64,6 @@ static void	init_data(t_data *data, char **envp)
 	data->lexer.dbquote = 0;
 }
 
-static void     print_envp(char **env)
-{
-        int     i = 0;
-
-        while (env[i])
-                printf("%s\n", env[i++]);
-}
-
-static char *get_line(t_data *data)
-{
-	char *line;
-
-	line = NULL;
-	if (line)
-	{
-		free(line);
-		line = NULL;
-	}
-	line = readline(get_prompt(data));
-	if (line)
-		add_history(line);
-	return (line);
-}
-
 int	ft_end(char *line, t_data *data, int mode)
 {
 	if (mode = 0)
@@ -106,7 +81,13 @@ int	ft_end(char *line, t_data *data, int mode)
 		free(data->prompt);
 		data->prompt = NULL;
 	}
-	ft_free_strs(data->env, ft_size_strs(data->env));
+	if (data->env != NULL)
+		ft_free_strs(data->env, ft_size_strs(data->env));
+	if (data->envlist != NULL)
+	{
+		free_envlist(&data->envlist);
+		free(data->envlist);
+	}
 	rl_clear_history();
 	return (1);
 }	
@@ -122,22 +103,23 @@ int	main(int argc, char **argv, char **envp)
 		return (0);
 	}
 	init_data(&data, envp);
+	g_exit_status = 0;
 	signal(SIGINT, sig_int);
 	signal(SIGQUIT, SIG_IGN);
 	while (data.mode)
 	{
-		line = get_line(&data);
-		if (!line)
+		line = readline("minishell~ ");
+		add_history(line);
+		if (line == NULL)
 		{
 			data.mode = 0;
 			return (ft_end(line, &data, data.mode));
-			//break ;
 		}
 		data.cmdline = line;
 		signal(SIGINT, sig_int);
 		signal(SIGQUIT, SIG_IGN);
 		lexer_and_parser(&data);
-		free(line);
+		free_end_mode(line, &data);
 	}
 	//return(ft_end(line, &data, 1));
 	return (0);

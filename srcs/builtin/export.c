@@ -6,7 +6,7 @@
 /*   By: asanson <asanson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/27 13:52:29 by asanson           #+#    #+#             */
-/*   Updated: 2022/02/27 13:52:32 by asanson          ###   ########.fr       */
+/*   Updated: 2022/03/11 20:26:25 by asanson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,10 @@ void	other_export(char *cmd, t_list **exenv, t_env *env, char **split)
 	new = NULL;
 	env = (t_env *)malloc(sizeof(t_env));
 	env->var = ft_strdup(split[0]);
-	env->value = ft_strdup(split[1]);
+	if (split[1])
+		env->value = ft_strdup(split[1]);
+	else
+		env->value = NULL;
 	env->size = ft_strlen(cmd);
 	new = ft_dlstnew(env);
 	ft_dlstadd_back(exenv, new);

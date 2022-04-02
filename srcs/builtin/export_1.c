@@ -6,7 +6,7 @@
 /*   By: asanson <asanson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/27 13:52:18 by asanson           #+#    #+#             */
-/*   Updated: 2022/02/27 13:52:23 by asanson          ###   ########.fr       */
+/*   Updated: 2022/03/11 20:25:57 by asanson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,10 +47,12 @@ char	**ft_export_split(char *cmd)
 	int		i;
 	int		j;
 
+	split = NULL;
 	index = is_equal(cmd);
-	split = malloc(sizeof(char *) * (2));
+	split = malloc(sizeof(char *) * (3));
 	split[0] = malloc(sizeof(char) * (index + 1));
-	split[1] = malloc(sizeof(char) * (ft_strlen(cmd) - index + 1));
+	split[1] = malloc(sizeof(char) * (((int)ft_strlen(cmd) - index) + 1));
+	split[2] = NULL;
 	i = 0;
 	while (cmd[i] != '=')
 	{
@@ -61,7 +63,7 @@ char	**ft_export_split(char *cmd)
 	j = 0;
 	while (cmd[i])
 		split[1][j++] = cmd[i++];
-	split[1][i] = '\0';
+	split[1][j] = '\0';
 	return (split);
 }
 
