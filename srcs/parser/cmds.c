@@ -1,82 +1,111 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   cmds.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mj <marvin@42.fr>                          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/04/12 16:50:16 by mj                #+#    #+#             */
+/*   Updated: 2022/04/30 17:31:31 by mj               ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "lexer.h"
 
-static int	size_cmds(t_list *tokenlst)
+int	check_quotes(char *str, char c)
 {
-	int size;
-	t_token *current;
-
-	size = 0;
-
-	while (tokenlst)
-	{
-		if (((t_token*)tokenlst->content)->tokenstr)
-		{
-			current = (t_token*)tokenlst->content;
-			if (current->tokentype == 0)
-				if (tokenlst->previous == NULL)
-					size++;
-				else if (tokenlst->previous != NULL)
-				{
-					if (((t_token*)tokenlst->previous->content)->tokentype < 1 || ((t_token*)tokenlst->previous->content)->tokentype > 4)
-						size++;
-				}
-			if (current->tokentype == 5)
-				break ;
-		}
-		tokenlst = tokenlst->next;
-	}
-	return (size);
-}
-
-
-static int	ft_tab_cmds(t_list **tokenlst, char **cmds)
-{
-	t_token *current;
-	int i;
+	int		i;
+	int		count;
 
 	i = 0;
-	while (*tokenlst)
+	count = 0;
+	while (str[i])
 	{
-		current = (*tokenlst)->content;
-		if (current->tokentype == 5)
-			break ;
-		if (current->tokentype == 0 && current->tokenstr != NULL)
-		{
-			if ((*tokenlst)->previous == NULL)
-			{
-				cmds[i] = ft_strdup(current->tokenstr);
-				if (cmds[i] == NULL)
-					return (1);
-				i++;
-			}
-                        else if ((*tokenlst)->previous != NULL)
-                        {
-                                if (((t_token*)(*tokenlst)->previous->content)->tokentype < 1 || ((t_token*)(*tokenlst)->previous->content)->tokentype > 4)
-				{
-					cmds[i] = ft_strdup(current->tokenstr);
-					if (cmds[i] == NULL)
-						return (1);
-					i++;
-				}
-                        }
-		}
-		*tokenlst = (*tokenlst)->next;
+		if (str[i] == c)
+			count++;
+		i++;
 	}
-	return (0);
+	return (count);
 }
 
-int	ft_cmds(t_list **tokenlst, char ***cmds)
+char	*no_quotes(char *str, char c)
 {
-	int size = 0;
-	char **new_cmds = NULL;
+	char	*new;
+	int		count;
+	int		i;
+	int		j;
 
-	size = size_cmds(*tokenlst);
-	new_cmds = malloc(sizeof(*new_cmds) * (size + 1));
-	if (new_cmds == NULL)
-		return (1);
-	new_cmds[size] = NULL;
-	if (ft_tab_cmds(tokenlst, new_cmds) > 0)
-		return (1);
-	*cmds = new_cmds;
-	return (0);	
+	count = check_quotes(str, c);
+	new = malloc(sizeof(char) * ((ft_strlen(str) - count) + 1));
+	if (!new)
+		return (NULL);
+	i = 0;
+	j = 0;
+	while (str[i])
+	{
+		if (str[i] == c)
+			i++;
+		else
+		{
+			new[j] = str[i];
+			j++;
+			i++;
+		}
+	}
+	new[j] = '\0';
+	return (new);
+}
+
+char	*no_quotes_2(char *str)
+{
+	char	*new;
+	int		i;
+	int		j;
+
+	new = malloc(sizeof(char) * ((ft_strlen(str) - \
+	(check_quotes(str, '\"') - check_quotes(str, '\''))) + 1));
+	if (!new)
+		return (NULL);
+	i = 0;
+	j = 0;
+	while (str[i])
+	{
+		if (str[i] == '\'' || str[i] == '\"')
+			i++;
+		else
+		{
+			new[j] = str[i];
+			j++;
+			i++;
+		}
+	}
+	new[j] = '\0';
+	return (new);
+}
+
+char	*new_cmd(char *tokenstr, t_data *data)
+{
+	int		db_quotes;
+	int		sp_quotes;
+	int		dollar;
+
+	db_quotes = ft_check_double(tokenstr);
+	sp_quotes = ft_check_simple(tokenstr);
+	dollar = ft_check_dollar_exp(tokenstr);
+	if (ft_value_found(tokenstr, data))
+		return (ft_strdup(tokenstr));
+	else if (sp_quotes == 0 && db_quotes == 0)
+		return (ft_strdup(tokenstr));
+	else if (db_quotes == 2 && sp_quotes == 0 && dollar == 0)
+		return (no_quotes(tokenstr, '\"'));
+	else if (db_quotes == 2 && sp_quotes == 0 && dollar == 1)
+		return (ft_strdup(tokenstr));
+	else if (db_quotes == 0 && sp_quotes == 2)
+		return (no_quotes(tokenstr, '\''));
+	else if (db_quotes == 2 && sp_quotes == 2 && ft_check_first(tokenstr) == 2)
+		return (no_quotes(tokenstr, '\"'));
+	else if (db_quotes == 2 && sp_quotes == 2 && ft_check_first(tokenstr) == 1)
+		return (no_quotes(tokenstr, '\''));
+	else
+		return (no_quotes_2(tokenstr));
 }

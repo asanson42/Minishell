@@ -1,22 +1,31 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   proclst.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mj <marvin@42.fr>                          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/04/28 20:34:32 by mj                #+#    #+#             */
+/*   Updated: 2022/04/30 17:19:58 by mj               ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "lexer.h"
 
 static int	add_process(t_process *process, t_list **proclst)
 {
-	t_list *new = NULL;
+	t_list	*new;
 
 	new = ft_dlstnew(process);
 	if (new == NULL)
-	{
-		//clear_process();
 		return (1);
-	}
 	ft_dlstadd_back(proclst, new);
 	return (0);
 }
 
-int	ft_proclst(t_list *tokenlst, t_list **proclst)
+int	ft_proclst(t_list *tokenlst, t_list **proclst, t_data *data)
 {
-	t_process *process;
+	t_process	*process;
 
 	while (tokenlst)
 	{
@@ -25,16 +34,10 @@ int	ft_proclst(t_list *tokenlst, t_list **proclst)
 			return (1);
 		ft_bzero(process, sizeof(*process));
 		if (ft_rdirlst(tokenlst, &process->rdirlst, process))
-		{
-			//clear_process(process);
 			return (1);
-		}
-		if (ft_cmds(&tokenlst, &process->cmds))
-		{
-			//clear_process(process);
+		if (ft_cmds(&tokenlst, &process->cmds, data, process->rdirlst))
 			return (1);
-		}
-		if (tokenlst && ((t_token*)tokenlst->content)->tokentype == 5)
+		if (tokenlst && ((t_token *)tokenlst->content)->tokentype == 5)
 			tokenlst = tokenlst->next;
 		if (add_process(process, proclst))
 			return (1);

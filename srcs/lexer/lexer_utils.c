@@ -6,7 +6,7 @@
 /*   By: asanson <asanson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/27 13:59:11 by asanson           #+#    #+#             */
-/*   Updated: 2022/02/27 18:22:54 by asanson          ###   ########.fr       */
+/*   Updated: 2022/05/06 17:53:01 by asanson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,42 +42,44 @@ int	ft_quote(char *cmdline, int quote, int i)
 	return (quote);
 }
 
-static int	ft_sstoken(char *cmdline, t_list **tokenlst, int i, int test)
+static int	ft_sstoken(char *cmdline, t_list **tokenlst, int i, t_lexer *lexer)
 {
 	int	toklen;
 
 	toklen = 0;
+	lexer->spec = 0;
 	while (cmdline[i + toklen]
 		&& (cmdline[i + toklen] == '<' || cmdline[i + toklen] == '>'))
 		toklen++;
 	if (toklen <= 2)
 	{
-		if (test == 1)
-			create_token(cmdline, tokenlst, toklen, i);
+		create_token(cmdline, tokenlst, toklen, i);
 		return (toklen);
 	}
-	return (-1);
+	lexer->spec = 1;
+	return (toklen);
 }
 
-int	ft_spetoken(char *cmdline, t_list **tokenlst, int i, int test)
+int	ft_spetoken(char *cmdline, t_list **tokenlst, int i, t_lexer *lexer)
 {
 	int	toklen;
 
 	toklen = 0;
+	lexer->spec = 0;
 	if (cmdline[i] == '|')
 	{
 		while (cmdline[i + toklen] && cmdline[i + toklen] == '|')
 			toklen++;
 		if (toklen == 1)
 		{
-			if (test == 1)
-				create_token(cmdline, tokenlst, toklen, i);
+			create_token(cmdline, tokenlst, toklen, i);
 			return (toklen);
 		}
 	}
 	else if (cmdline[i] == '<' || cmdline[i] == '>')
-		return (ft_sstoken(cmdline, tokenlst, i, test));
-	return (-1);
+		return (ft_sstoken(cmdline, tokenlst, i, lexer));
+	lexer->spec = 1;
+	return (toklen);
 }
 
 void	find_tokstate(t_token *token)

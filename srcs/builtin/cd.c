@@ -6,7 +6,7 @@
 /*   By: asanson <asanson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/27 13:43:44 by asanson           #+#    #+#             */
-/*   Updated: 2022/02/27 17:44:06 by asanson          ###   ########.fr       */
+/*   Updated: 2022/05/09 19:06:08 by mj               ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,5 +128,6 @@ int	ft_cd(char **args, t_data *data)
 		return (set_directory(home, data->env, 1));
 	}
 	args[1] = add_home_path(args[1], data->env);
+	data->succes = 1;
 	return (s_path(args, data->env));
 }

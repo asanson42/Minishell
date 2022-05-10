@@ -6,28 +6,25 @@
 /*   By: asanson <asanson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/27 13:55:43 by asanson           #+#    #+#             */
-/*   Updated: 2022/03/09 16:04:14 by mj               ###   ########.fr       */
+/*   Updated: 2022/05/06 17:55:17 by asanson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "lexer.h"
 
-void	find_state(t_token *current)
+int	ft_is_null(t_token *token)
 {
-	if (ft_isspec((int)current->tokenstr[0]) == 0)
-		current->tokentype = 0;
-	else
-		current->tokentype = 2;
-}
+	int	i;
 
-static void	create_spe_token(char *cmd, t_list **toklst, t_lexer *d, int index)
-{
-	if (d->quote == 0 && cmd[index] == 39)
-		create_token(cmd, toklst, d->toklen - 2, index + 1);
-	else if (d->dbquote == 0 && cmd[index] == 34)
-		create_token(cmd, toklst, d->toklen - 2, index + 1);
-	else
-		create_token(cmd, toklst, d->toklen, index);
+	i = 0;
+	if (!token->tokenstr)
+		return (1);
+	while (token->tokenstr[i] && (token->tokenstr[i] == ' '
+			|| token->tokenstr[i] == '\t'))
+		i++;
+	if (token->tokenstr[i] == '\0')
+		return (1);
+	return (0);
 }
 
 void	create_token(char *cmdline, t_list **tokenlst, int len, int index)
@@ -36,6 +33,8 @@ void	create_token(char *cmdline, t_list **tokenlst, int len, int index)
 	t_list	*new;
 	t_token	*current;
 
+	if (len <= 0)
+		return ;
 	new = NULL;
 	current = NULL;
 	i = 0;
@@ -55,6 +54,30 @@ void	create_token(char *cmdline, t_list **tokenlst, int len, int index)
 	ft_dlstadd_back(tokenlst, new);
 }
 
+static void	create_spe_token(char *cmd, t_list **toklst, t_lexer *d, int index)
+{
+	if (d->quote == 0 && cmd[index] == 39)
+		create_token(cmd, toklst, d->toklen, index);
+	else if (d->dbquote == 0 && cmd[index] == 34)
+		create_token(cmd, toklst, d->toklen, index);
+	else
+		create_token(cmd, toklst, d->toklen, index);
+}
+
+static int	check_cmdending(char *cmd, int index)
+{
+	int	i;
+
+	i = 0;
+	while (cmd[index + i])
+	{
+		if (cmd[index + i] != ' ')
+			return (index);
+		i++;
+	}
+	return (index + i);
+}
+
 int	find_token(char *cmd, t_list **tokenlst, t_lexer *d)
 {
 	int	i;
@@ -66,12 +89,11 @@ int	find_token(char *cmd, t_list **tokenlst, t_lexer *d)
 		while (cmd[i] && cmd[i] == ' ' && d->quote == 0 && d->dbquote == 0)
 			i++;
 		if (cmd[i] && ft_isspec(cmd[i]) == 1)
-			d->toklen += ft_spetoken(cmd, tokenlst, i, 1);
-		else if (ft_isspec(cmd[i]) == 0 || d->toklen == -1)
+			d->toklen += ft_spetoken(cmd, tokenlst, i, d);
+		if (ft_isspec(cmd[i]) == 0 || d->spec == 1)
 		{
-			while ((cmd[i + d->toklen] != ' ' || d->quote == 1
-					|| d->dbquote == 1) && cmd[i + d->toklen]
-				&& ft_spetoken(cmd, tokenlst, i + d->toklen, 0) == -1)
+			while (cmd[i + d->toklen] && ((cmd[i + d->toklen] != ' '
+						|| d->quote == 1 || d->dbquote == 1) || d->spec == 1))
 			{
 				d->quote = ft_quote(cmd, d->quote, i + d->toklen);
 				d->dbquote = ft_quote(cmd, d->dbquote, i + d->toklen);
@@ -79,7 +101,7 @@ int	find_token(char *cmd, t_list **tokenlst, t_lexer *d)
 			}
 			create_spe_token(cmd, tokenlst, d, i);
 		}
-		i += d->toklen;
+		i += check_cmdending(cmd + i, d->toklen);
 	}
 	return (1);
 }

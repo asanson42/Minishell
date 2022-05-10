@@ -6,7 +6,7 @@
 /*   By: asanson <asanson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/27 13:52:38 by asanson           #+#    #+#             */
-/*   Updated: 2022/03/09 17:46:30 by mj               ###   ########.fr       */
+/*   Updated: 2022/05/09 19:12:26 by mj               ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,9 +19,10 @@ static void	ft_print_pwd(char *pwd, int fd)
 	i = 4;
 	while (pwd[i])
 		ft_putchar_fd(pwd[i++], fd);
+	write(fd, "\n", 1);
 }
 
-void	ft_pwd(char **env, int fd)
+void	ft_pwd(char **env, int fd, t_data *data)
 {
 	int	i;
 
@@ -35,5 +36,6 @@ void	ft_pwd(char **env, int fd)
 		}
 		i++;
 	}
+	data->succes = 1;
 	return ;
 }

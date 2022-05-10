@@ -6,7 +6,7 @@
 /*   By: mmahias <mmahias@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/05 13:21:50 by mmahias           #+#    #+#             */
-/*   Updated: 2021/01/05 13:24:43 by mmahias          ###   ########.fr       */
+/*   Updated: 2022/04/05 16:56:38 by mj               ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ static char	*ft_convert_itoa(long int nb, int size, char *str)
 	return (str);
 }
 
-char		*ft_itoa(int n)
+char	*ft_itoa(int n)
 {
 	char		*str;
 	int			size;

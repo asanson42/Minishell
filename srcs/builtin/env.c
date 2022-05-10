@@ -6,7 +6,7 @@
 /*   By: asanson <asanson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/27 13:52:06 by asanson           #+#    #+#             */
-/*   Updated: 2022/03/09 17:48:05 by mj               ###   ########.fr       */
+/*   Updated: 2022/05/09 19:07:05 by mj               ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,5 +40,6 @@ void	ft_env(t_data *data, t_list *envx, int fd)
 		}
 		envx = envx->next;
 	}
+	data->succes = 1;
 	return ;
 }
